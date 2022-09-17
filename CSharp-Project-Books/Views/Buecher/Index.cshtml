@@ -10,6 +10,7 @@
         <tr>
             <td>Titel</td>
             <td>Autor</td>
+            <td>Verschieben in andere Tabelle</td>
         </tr>
     </thead>
 
@@ -22,6 +23,9 @@
                 </td>
                 <td>
                     @buch.Autor
+                </td>
+                <td>
+                        @Html.ActionLink("Verschieben", "VerschiebeNachArchiviert", "Buecher", buch)
                 </td>
             </tr>
         }
@@ -38,6 +42,7 @@
             <tr>
                 <td>Titel</td>
                 <td>Autor</td>
+                <td>Verschieben in andere Tabelle</td>
             </tr>
         </thead>
 
@@ -50,6 +55,9 @@
                     </td>
                     <td>
                         @buch.Autor
+                    </td>
+                    <td>
+                        <a asp-action=VerschiebeNachAktuell asp-controller=Buecher asp-route-id=@buch.Titel>Verschieben</a>
                     </td>
                 </tr>
             }

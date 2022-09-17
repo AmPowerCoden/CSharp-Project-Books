@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using BuecherDB;
 using CSharp_Project_Books.Models;
+using System.Xml.Serialization;
 
 namespace CSharp_Project_Books.Controllers
 {
@@ -14,15 +15,27 @@ namespace CSharp_Project_Books.Controllers
             this._konfigurationsLeser = konfigurationsLeser;
         }
 
+        public string GetConnectionString()
+        {
+            return _konfigurationsLeser.LiesDatenbankVerbindungZurMariaDB();
+        }
+
         public IActionResult Index()
         {
-            string connectionString = GetConnectionString();
+
+            BuecherListModel model = LeseDatenInModel(GetConnectionString());
+
+            return View(model);
+        }
+
+        public BuecherListModel LeseDatenInModel(string connectionString)
+        {
+            List<BuchDTO> aktuelleBuecher = new List<BuchDTO>();
+            List<BuchDTO> archivierteBuecher = new List<BuchDTO>();
+
             var repository = new BuecherRepository(connectionString);
 
-            List<BuchDTO>? aktuelleBuecher = new List<BuchDTO>();
-            List<BuchDTO>? archivierteBuecher = new List<BuchDTO>();
-
-            Thread aktuelleBuecherLesen = new Thread(() => 
+            Thread aktuelleBuecherLesen = new Thread(() =>
             {
                 aktuelleBuecher = repository.HoleAktuelleBuecher();
             });
@@ -38,14 +51,37 @@ namespace CSharp_Project_Books.Controllers
             aktuelleBuecherLesen.Join();
             archivierteBuecherLesen.Join();
 
-            var model = new BuecherListModel(aktuelleBuecher, archivierteBuecher);
-
-            return View(model);
+            return new BuecherListModel(aktuelleBuecher, archivierteBuecher);
         }
 
-        public string GetConnectionString()
+        public void Verschieben(string titel, string quelle, string ziel) // hier abänderungen treffen
         {
-            return _konfigurationsLeser.LiesDatenbankVerbindungZurMariaDB();
+            string connectionString = GetConnectionString();
+            var repository = new BuecherRepository(connectionString);
+            repository.VerschiebeBuch(titel, quelle, ziel);
         }
+
+        [HttpGet]
+        public IActionResult VerschiebeNachAktuell(BuchDTO buch)
+        {
+            var buchtitel = buch.Titel;
+
+            Verschieben(buchtitel, "archivierte_buecher", "aktuelle_buecher");
+
+            BuecherListModel model = LeseDatenInModel(GetConnectionString());
+
+            return View("Views/Buecher/Index.cshtml", model);
+        }
+
+        [HttpGet]
+        public IActionResult VerschiebeNachArchiviert(BuchDTO buch)
+        {
+            Verschieben(buch.Titel, "aktuelle_buecher", "archivierte_buecher");
+
+            BuecherListModel model = LeseDatenInModel(GetConnectionString());
+
+            return View("Views/Buecher/Index.cshtml", model);
+        }
+
     }
 }
