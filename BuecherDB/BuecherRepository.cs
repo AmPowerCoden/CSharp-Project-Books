@@ -13,17 +13,17 @@ namespace BuecherDB
 
         public List<BuchDTO> HoleAktuelleBuecher()
         {
-            return getBooksFromOneTable("aktuelle_Buecher");
+            return GetBooksFromOneTable("aktuelle_Buecher");
         }
 
         public List<BuchDTO> HoleArchivierteBuecher()
         {
-            return getBooksFromOneTable("archivierte_Buecher");
+            return GetBooksFromOneTable("archivierte_Buecher");
         }
 
-        public List<BuchDTO> getBooksFromOneTable(string tabellenname)
+        public List<BuchDTO> GetBooksFromOneTable(string tabellenname)
         {
-            List<BuchDTO> Buecher = new List<BuchDTO>();
+            List<BuchDTO> Buecher = new();
 
             using var db_Verbindung = new MySqlConnection(connectionString);
             db_Verbindung.Open();
@@ -34,10 +34,12 @@ namespace BuecherDB
 
             while (reader.Read())
             {
-                BuchDTO buch = new BuchDTO();
-                buch.isAktuell = true;
-                buch.Autor = (string?)reader["autor"];
-                buch.Titel = (string?)reader["titel"];
+                BuchDTO buch = new BuchDTO
+                {
+                    isAktuell = true,
+                    Autor = (string?)reader["autor"],
+                    Titel = (string?)reader["titel"]
+                };
 
                 Buecher.Add(buch);
             }
@@ -47,32 +49,10 @@ namespace BuecherDB
             return Buecher;
         }
 
-        public void VerschiebeBuch(string titel, string quelle, string ziel)
+        public void VerschiebeBuch(BuchDTO buch, string quelle, string ziel)
         {
             using var db_Verbindung = new MySqlConnection(connectionString);
             db_Verbindung.Open();
-
-            BuchDTO buch = new BuchDTO();
-
-            string queryBuechVerschiebe = "SELECT titel, autor FROM " + quelle + " WHERE titel = @titel";
-            using var command = new MySqlCommand(queryBuechVerschiebe, db_Verbindung);
-            command.Parameters.AddWithValue("titel", titel);
-
-            using var reader = command.ExecuteReader();
-
-            while (reader.Read())
-            {
-                if(ziel == "aktuelle_buecher")
-                {
-                    buch.isAktuell = true;
-                }
-                else
-                {
-                    buch.isAktuell = false;
-                }
-                buch.Autor = (string?)reader["autor"];
-                buch.Titel = (string?)reader["titel"];
-            }
 
             LoescheBuch(buch, quelle);
 

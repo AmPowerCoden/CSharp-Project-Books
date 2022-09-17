@@ -30,8 +30,8 @@ namespace CSharp_Project_Books.Controllers
 
         public BuecherListModel LeseDatenInModel(string connectionString)
         {
-            List<BuchDTO> aktuelleBuecher = new List<BuchDTO>();
-            List<BuchDTO> archivierteBuecher = new List<BuchDTO>();
+            List<BuchDTO> aktuelleBuecher = new();
+            List<BuchDTO> archivierteBuecher = new();
 
             var repository = new BuecherRepository(connectionString);
 
@@ -54,29 +54,25 @@ namespace CSharp_Project_Books.Controllers
             return new BuecherListModel(aktuelleBuecher, archivierteBuecher);
         }
 
-        public void Verschieben(string titel, string quelle, string ziel) // hier abänderungen treffen
+        public void Verschieben(BuchDTO buch, string quelle, string ziel) // hier abänderungen treffen
         {
             string connectionString = GetConnectionString();
             var repository = new BuecherRepository(connectionString);
-            repository.VerschiebeBuch(titel, quelle, ziel);
+            repository.VerschiebeBuch(buch, quelle, ziel);
         }
 
-        [HttpGet]
         public IActionResult VerschiebeNachAktuell(BuchDTO buch)
         {
-            var buchtitel = buch.Titel;
-
-            Verschieben(buchtitel, "archivierte_buecher", "aktuelle_buecher");
+            Verschieben(buch, "archivierte_buecher", "aktuelle_buecher");
 
             BuecherListModel model = LeseDatenInModel(GetConnectionString());
 
             return View("Views/Buecher/Index.cshtml", model);
         }
 
-        [HttpGet]
         public IActionResult VerschiebeNachArchiviert(BuchDTO buch)
         {
-            Verschieben(buch.Titel, "aktuelle_buecher", "archivierte_buecher");
+            Verschieben(buch, "aktuelle_buecher", "archivierte_buecher");
 
             BuecherListModel model = LeseDatenInModel(GetConnectionString());
 

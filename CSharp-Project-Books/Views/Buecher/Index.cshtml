@@ -2,6 +2,7 @@
 
 <h2>Buecher aus den Datenbanktabellen:</h2>
 
+@*Erstellen der Liste mit den Aktuellen Buechern*@
 <div style="width:45%; display: inline-block">
     <h3>Aktuelle Buecher</h3>
     <table class="table table-hover mb-0">
@@ -25,7 +26,7 @@
                     @buch.Autor
                 </td>
                 <td>
-                        @Html.ActionLink("Verschieben", "VerschiebeNachArchiviert", "Buecher", buch)
+                    @Html.ActionLink("Verschieben", "VerschiebeNachArchiviert", "Buecher", buch)
                 </td>
             </tr>
         }
@@ -34,6 +35,7 @@
     </table>
 </div>
 
+@*Erstellen der Liste mit den Archivierten Buechern*@
 <div style="width:45%; display: inline-block">
     <h3>Archivierte Buecher</h3>
     <table class="table table-hover mb-0">
@@ -57,7 +59,7 @@
                         @buch.Autor
                     </td>
                     <td>
-                        <a asp-action=VerschiebeNachAktuell asp-controller=Buecher asp-route-id=@buch.Titel>Verschieben</a>
+                        @Html.ActionLink("Verschieben", "VerschiebeNachAktuell", "Buecher", buch)
                     </td>
                 </tr>
             }
