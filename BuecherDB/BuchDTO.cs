@@ -8,7 +8,7 @@ namespace BuecherDB
 {
     public class BuchDTO
     {
-        public bool isAktuell { get; set; }
+        //Klasse die alle Daten eines Buches enthält
         public string? Titel { get; set; }
         public string? Autor { get; set; }
     }

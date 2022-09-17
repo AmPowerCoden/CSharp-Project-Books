@@ -8,26 +8,26 @@ namespace BuecherDB
 
         public BuecherRepository(string connectionString)
         {
-            this.connectionString = connectionString;
+            this.connectionString = connectionString; //legt bei erstellung den connectionString zur Datenbank fest
         }
 
         public List<BuchDTO> HoleAktuelleBuecher()
         {
-            return GetBooksFromOneTable("aktuelle_Buecher");
+            return GetBooksFromOneTable("aktuelle_Buecher"); //Liest alle aktuellen Bücher
         }
 
         public List<BuchDTO> HoleArchivierteBuecher()
         {
-            return GetBooksFromOneTable("archivierte_Buecher");
+            return GetBooksFromOneTable("archivierte_Buecher"); //Liest alle archivierten Bücher
         }
 
         public List<BuchDTO> GetBooksFromOneTable(string tabellenname)
         {
             List<BuchDTO> Buecher = new();
 
+            //Hier wird die Datenbankabfrage gestartet und die Abfrage zum Auslesen einer der beiden tabellen wird ausgeführt
             using var db_Verbindung = new MySqlConnection(connectionString);
             db_Verbindung.Open();
-
             string queryBuecher = "SELECT titel, autor FROM " + tabellenname;
             using var commando = new MySqlCommand(queryBuecher, db_Verbindung);
             using var reader = commando.ExecuteReader();
@@ -36,7 +36,6 @@ namespace BuecherDB
             {
                 BuchDTO buch = new BuchDTO
                 {
-                    isAktuell = true,
                     Autor = (string?)reader["autor"],
                     Titel = (string?)reader["titel"]
                 };
@@ -52,17 +51,15 @@ namespace BuecherDB
         public void VerschiebeBuch(BuchDTO buch, string quelle, string ziel)
         {
             using var db_Verbindung = new MySqlConnection(connectionString);
-            db_Verbindung.Open();
 
-            LoescheBuch(buch, quelle);
+            LoescheBuch(buch, quelle); //Lösche das Buch aus der Quelltabelle
 
-            FuegeBuchEin(buch, ziel);
-
-            db_Verbindung.Close();
+            FuegeBuchEin(buch, ziel); //Füge das buch der Zieltabelle hinzu
         }
 
         public void LoescheBuch(BuchDTO buch, string quelle)
         {
+            //Datenbankverbindung aufbauen und Befehl zum Löschen aus der Quelladresse wird hier ausgeführt
             using var db_Verbindung = new MySqlConnection(connectionString);
             db_Verbindung.Open();
 
@@ -78,6 +75,7 @@ namespace BuecherDB
 
         public void FuegeBuchEin(BuchDTO buch, string ziel)
         {
+            //Datenbankverbindung aufbauen und Befehl zum Einfuegen in die Zieladresse wird hier ausgeführt
             using var db_Verbindung = new MySqlConnection(connectionString);
             db_Verbindung.Open();
 
