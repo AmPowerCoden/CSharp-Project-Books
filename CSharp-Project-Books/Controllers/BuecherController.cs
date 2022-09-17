@@ -1,5 +1,6 @@
 ﻿using CSharp_Project_Books.Utils;
 using Microsoft.AspNetCore.Mvc;
+using BuecherDB;
 
 namespace CSharp_Project_Books.Controllers
 {
@@ -14,6 +15,9 @@ namespace CSharp_Project_Books.Controllers
 
         public IActionResult Index()
         {
+            string connectionString = GetConnectionString();
+            var repository = new BuecherRepository(connectionString);
+
             return View();
         }
 
