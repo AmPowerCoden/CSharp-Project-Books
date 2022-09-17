@@ -19,8 +19,24 @@ namespace CSharp_Project_Books.Controllers
             string connectionString = GetConnectionString();
             var repository = new BuecherRepository(connectionString);
 
-            List<BuchDTO>? aktuelleBuecher = repository.HoleAktuelleBuecher();
-            List<BuchDTO>? archivierteBuecher = repository.HoleArchivierteBuecher();
+            List<BuchDTO>? aktuelleBuecher = new List<BuchDTO>();
+            List<BuchDTO>? archivierteBuecher = new List<BuchDTO>();
+
+            Thread aktuelleBuecherLesen = new Thread(() => 
+            {
+                aktuelleBuecher = repository.HoleAktuelleBuecher();
+            });
+
+            Thread archivierteBuecherLesen = new Thread(() =>
+            {
+                archivierteBuecher = repository.HoleArchivierteBuecher();
+            });
+
+            aktuelleBuecherLesen.Start();
+            archivierteBuecherLesen.Start();
+
+            aktuelleBuecherLesen.Join();
+            archivierteBuecherLesen.Join();
 
             var model = new BuecherListModel(aktuelleBuecher, archivierteBuecher);
 
