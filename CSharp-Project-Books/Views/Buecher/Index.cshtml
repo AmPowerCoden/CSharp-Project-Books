@@ -1,10 +1,60 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model BuecherListModel
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<h2>Buecher aus den Datenbanktabellen:</h2>
+
+<div style="width:45%; display: inline-block">
+    <h3>Aktuelle Buecher</h3>
+    <table class="table table-hover mb-0">
+
+    <thead>
+        <tr>
+            <td>Titel</td>
+            <td>Autor</td>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var buch in Model.AktuelleBuecherList)
+        {
+            <tr>
+                <td>
+                    @buch.Titel
+                </td>
+                <td>
+                    @buch.Autor
+                </td>
+            </tr>
+        }
+    </tbody>
+
+    </table>
 </div>
+
+<div style="width:45%; display: inline-block">
+    <h3>Archivierte Buecher</h3>
+    <table class="table table-hover mb-0">
+
+        <thead>
+            <tr>
+                <td>Titel</td>
+                <td>Autor</td>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var buch in Model.ArchivierteBuecherList)
+            {
+                <tr>
+                    <td>
+                        @buch.Titel
+                    </td>
+                    <td>
+                        @buch.Autor
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+</div>
+
